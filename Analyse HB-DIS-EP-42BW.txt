@@ -22,13 +22,16 @@ index.htm                           s       1           1 (Verweis auf jp_webui_
 programs.htm                        p       3           2 (2,3)
 
 \www\webui\
-webui.js                            s/p     7           5 (1..5)
+webui.js                            s       7           5 (1..5) (bei jp ist das eine s/p Kombi, hier nur noch s, kein p mehr)
 
 \www\webui\js\lang\de\
 translate.lang.extension.js         s       1           1
 translate.lang.js                   (p)     1           0
 translate.lang.stringtable.js       s       1           1 (aber nur die 5 HB_EP_xx Einträge)
 
+Methods:
+s sed
+p patch
 
 -------------------------------------------------------------------------------
 2. src - benötigte Files

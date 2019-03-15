@@ -42,6 +42,14 @@ if [ "`cat $webuiFile | grep \"$webuiSearch\"`" ]; then
     sed -i "/\($webuiSearch\)/d" $webuiFile
 fi
 
+#TM
+mysearch="for (var line = 0; line < 10; line++) {"
+myinsert="for (var line = 0; line < 6; line++) {"
+if [ -z "`cat $webuiFile | grep \"$myinsert\"`" ]; then
+	sed -i "s/$mysearch/$myinsert/" $webuiFile
+fi
+
+
 stringtable_deFile="/www/config/stringtable_de.txt"
 stringtable_deSearch="HB_EP_SHOW_LINE"
 if [ "`cat $stringtable_deFile | grep \"$stringtable_deSearch\"`" ]; then

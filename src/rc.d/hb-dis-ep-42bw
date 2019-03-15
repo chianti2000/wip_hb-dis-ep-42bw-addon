@@ -15,6 +15,15 @@ CK_FIRMWARE_FILE=${FIRMWARE_DIR}/hb-dis-ep-42bw_e_v1_0.xml
 FW_VERSION=$(grep /VERSION -e 'VERSION=' | sed 's/.*=//')
 BACKUP_DIR=${ADDON_DIR}/backup_${FW_VERSION}
 
+PATCHDIR1=/www/config
+PATCHFIL1=ic_common.tcl
+PATCHDIR2=/www/rega/esp
+PATCHFIL2=functions.fn
+PATCHDIR3=/www/rega/esp
+PATCHFIL3=side.inc
+PATCHDIR4=/www/rega/pages/tabs/admin/views
+PATCHFIL4=programs.htm
+
 case "$1" in
     ""|start)
       if [ ! -f ${ADDON_DIR}/installed ] || [ ! -f ${CK_FIRMWARE_FILE} ]; then
@@ -23,16 +32,21 @@ case "$1" in
 		    
         mount -o remount,rw /
         
+        # beim ersten Mal auf neuer Firmware die zu patchenden Originalfiles sichern und (weiter unten) patchen
         if [ ! -f ${BACKUP_DIR}/saved ]; then
             mkdir -p ${BACKUP_DIR}
-            cp -af /www/config/ic_common.tcl ${BACKUP_DIR}
-            cp -af /www/rega/esp/functions.fn ${BACKUP_DIR}
-            cp -af /www/rega/esp/side.inc ${BACKUP_DIR}
-            cp -af /www/rega/pages/tabs/admin/views/programs.htm ${BACKUP_DIR}
-            cp -af /www/webui/webui.js ${BACKUP_DIR}
+            cp -af ${PATCHDIR1}/${PATCHFIL1} ${BACKUP_DIR}
+            cp -af ${PATCHDIR2}/${PATCHFIL2} ${BACKUP_DIR}
+            cp -af ${PATCHDIR3}/${PATCHFIL3} ${BACKUP_DIR}
+            cp -af ${PATCHDIR4}/${PATCHFIL4} ${BACKUP_DIR}
             touch ${BACKUP_DIR}/saved
+        # sonst ist es wahrscheinlich eine Update-Installation
+        # in diedem Fall die Originalfiles einfach zurückholen und (weiter unten) neu patchen
         else
-            # copy BACKUP_DIR files to original location
+            cp -af ${BACKUP_DIR}/${PATCHFIL1} ${PATCHDIR1}
+            cp -af ${BACKUP_DIR}/${PATCHFIL2} ${PATCHDIR2}
+            cp -af ${BACKUP_DIR}/${PATCHFIL3} ${PATCHDIR3}
+            cp -af ${BACKUP_DIR}/${PATCHFIL4} ${PATCHDIR4}
         fi
 	    	
         cd ${ADDON_DIR}
@@ -52,12 +66,12 @@ case "$1" in
 #        patch -R -p3 -i /usr/local/addons/jp-hb-devices-addon/patch/jp.patch 
         patch -N -p3 -i /usr/local/addons/${ADDON_NAME}/patch/hb-dis-ep-42bw.patch
       
-        [[ -f ./config/ic_common.tcl.orig ]] && rm ./config/ic_common.tcl.orig
-        [[ -f ./rega/esp/side.inc.orig ]] && rm ./rega/esp/side.inc.orig
-        [[ -f ./rega/esp/functions.fn.orig ]] && rm ./rega/esp/functions.fn.orig
-        [[ -f ./rega/pages/tabs/admin/views/programs.htm.orig ]] && rm ./rega/pages/tabs/admin/views/programs.htm.orig
+#        [[ -f ./config/ic_common.tcl.orig ]] && rm ./config/ic_common.tcl.orig
+#        [[ -f ./rega/esp/side.inc.orig ]] && rm ./rega/esp/side.inc.orig
+#        [[ -f ./rega/esp/functions.fn.orig ]] && rm ./rega/esp/functions.fn.orig
+#        [[ -f ./rega/pages/tabs/admin/views/programs.htm.orig ]] && rm ./rega/pages/tabs/admin/views/programs.htm.orig
 #        [[ -f ./rega/esp/datapointconfigurator.fn.orig ]] && rm ./rega/esp/datapointconfigurator.fn.orig
-        [[ -f ./webui/webui.js.orig ]] && rm ./webui/webui.js.orig
+#        [[ -f ./webui/webui.js.orig ]] && rm ./webui/webui.js.orig
 #        [[ -f ./webui/js/lang/de/translate.lang.js.orig ]] && rm ./webui/js/lang/de/translate.lang.js.orig
 
         ### Create Symlink to include own js file
@@ -118,18 +132,18 @@ case "$1" in
       ./uninstall_hb-dis-ep-xxx > $LOGFILE 2>$ERRFILE
       
       cd /www
-      patch -R -p3 -i /usr/local/addons/${ADDON_NAME}/patch/hb-dis-ep-42bw.patch
+#      patch -R -p3 -i /usr/local/addons/jp-hb-devices-addon/patch/hb-dis-ep-42bw.patch
 #      patch -R -p3 -i /usr/local/addons/jp-hb-devices-addon/patch/hb-uni-sen-rfid-rc.patch
 #      patch -R -p3 -i /usr/local/addons/jp-hb-devices-addon/patch/jp.patch 
 
-      [[ -f ./webui/webui.js.orig ]] && rm ./webui/webui.js.orig
-#      [[ -f ./rega/esp/datapointconfigurator.fn.orig ]] && rm ./rega/esp/datapointconfigurator.fn.orig
-      [[ -f ./rega/esp/functions.fn.orig ]] && rm ./rega/esp/functions.fn.orig
-      [[ -f ./rega/esp/side.inc.orig ]] && rm ./rega/esp/side.inc.orig
-      [[ -f ./rega/pages/tabs/admin/views/programs.htm.orig ]] && rm ./rega/pages/tabs/admin/views/programs.htm.orig
-      [[ -f ./config/ic_common.tcl.orig ]] && rm ./config/ic_common.tcl.orig
 #      [[ -f ./webui/webui.js.orig ]] && rm ./webui/webui.js.orig
-      [[ -f ./webui/js/extern/jp_webui_inc.js ]] && rm ./webui/js/extern/jp_webui_inc.js
+#      [[ -f ./rega/esp/datapointconfigurator.fn.orig ]] && rm ./rega/esp/datapointconfigurator.fn.orig
+#      [[ -f ./rega/esp/functions.fn.orig ]] && rm ./rega/esp/functions.fn.orig
+#      [[ -f ./rega/esp/side.inc.orig ]] && rm ./rega/esp/side.inc.orig
+#      [[ -f ./rega/pages/tabs/admin/views/programs.htm.orig ]] && rm ./rega/pages/tabs/admin/views/programs.htm.orig
+#      [[ -f ./config/ic_common.tcl.orig ]] && rm ./config/ic_common.tcl.orig
+#      [[ -f ./webui/webui.js.orig ]] && rm ./webui/webui.js.orig
+#      [[ -f ./webui/js/extern/jp_webui_inc.js ]] && rm ./webui/js/extern/jp_webui_inc.js
 #      [[ -f ./webui/js/lang/de/translate.lang.js.orig ]] && rm ./webui/js/lang/de/translate.lang.js.orig
   		    		    		
       cd /

@@ -82,6 +82,13 @@ if [ -z "`cat $webuiFile | grep \"$webuiInsertParam\"`" ]; then
 	sed -i "s/\($webuiSearchBegin\)/\1$webuiInsert/g" $webuiFile
 fi
 
+#TM
+mysearch="for (var line = 0; line < 6; line++) {"
+myinsert="for (var line = 0; line < 10; line++) {"
+if [ -z "`cat $webuiFile | grep \"$myinsert\"`" ]; then
+	sed -i "s/$mysearch/$myinsert/" $webuiFile
+fi
+
 
 ### Edit stringtable_de.txt ###
 stringtable_deFile="/www/config/stringtable_de.txt"
