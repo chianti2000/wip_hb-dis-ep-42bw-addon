@@ -1,0 +1,95 @@
+
+1. patchsource - Diff Analyse
+
+                                    Patch   Diffs       Diffs benötigt für HB-DIS-EP-42BW
+                                    Method
+\www\config\
+ic_common.tcl                       p       3           3
+stringtable_de.txt                  s       1           1 (aber nur die 5 HB_EP_xx Einträge)
+
+\www\config\devdescr
+DEVDB.tcl                           s       1           1 (aber nur die Referenzen auf 2x HB-DIS-EP-42BW png)
+
+\www\rega\esp\
+datapointconfigurator.fn            (p)     2           0
+functions.fn                        p       1           1 
+side.inc                            p       10          6 (2,4,5,6,8,10)
+
+\www\rega\pages\
+index.htm                           s       1           1 (Verweis auf jp_webui_inc.js)
+
+\www\rega\pages\tabs\admin\views\
+programs.htm                        p       3           2 (2,3)
+
+\www\webui\
+webui.js                            s/p     7           5 (1..5)
+
+\www\webui\js\lang\de\
+translate.lang.extension.js         s       1           1
+translate.lang.js                   (p)     1           0
+translate.lang.stringtable.js       s       1           1 (aber nur die 5 HB_EP_xx Einträge)
+
+
+-------------------------------------------------------------------------------
+2. src - benötigte Files
+
+\src\addon\install_hb-dis-ep-xxx                                ja
+\src\addon\uninstall_hb-dis-ep-xxx                              ja
+
+\src\addon\firmware\rftypes\hb-dis-ep-42bw_e_v1_0.xml           ja
+
+\src\addon\js\jp_webui_inc.js                                   nur class HbStatusDisplayDialogEPaper
+                                                                nicht class iseRFIDKey
+
+                                                                
+                                                                
+\src\addon\patch\hb-dis-ep-42bw.patch                           ja
+\src\addon\patch\jp.patch                                       nicht benötigt
+
+\src\addon\www\config\easymodes\                                nichts daraus benötigt
+\src\addon\www\config\img\devices\250\hb-dis-ep-42bw.png        ja
+\src\addon\www\config\img\devices\250\hb-dis-ep-42bw_thumb.png  ja
+\src\addon\www\ise\                                             die icons unter \icons_hm_dis_ep_wm55\24\ auch fürs ePaper
+\src\addon\www\rega\                                            nichts daraus benötigt
+
+
+-------------------------------------------------------------------------------
+3. Messages
+
+TomMajor hat geschrieben:09.03.2019, 16:39
+Hälst du es für machbar wenn ich das ePaper Addon aus deinen JP-HB-Devices-addon herausoperiere?
+Würde gern die Modifikationen auf meiner RM auf das absolut notwendige Maß beschränken.
+Weiß ja vom Unisensor wie es prinzipiell geht, nur es gibt noch 3 patch files mit denen ich moch wohl beschäftigen müsste und eventuell noch weitere Baustellen, bin nicht sicher.
+Würdest du mir da bei Bedarf ein paar Fragen beantworten und soll ich diese über PN oder in einem thread stellen?
+
+jp112sdl:
+Ja das mit den Patchfiles ist eine spannende Geschichte.
+Momentan habe ich die Modifikationen in den zu patchenden Dateien dort eingebaut, wo sie auch noch über mehrere CCU-Firmwareversionen abwärtskompatibel sind.
+Bei jeder neuen CCU-Firmwareversion muss man schauen, ob das Patchen noch funktioniert, oder ob eQ-3 zu große Diffs an den entsprechenden Dateien vorgenommen hat, so dass sich die Patche nicht mehr anwenden lassen.
+Das ist jedes Mal eine Baustelle für sich.
+
+Fürs ePaper werden 4 Files gepatcht:
+/www/rega/esp/side.inc
+/www/rega/esp/functions.fn
+/www/webui/webui.js
+/www/rega/pages/tabs/admin/views/programs.htm
+/patchsource/www/config/ic_common.tcl
+
+P.S.: Die Datei "jp_webui_inc" darfst auch auch nicht vergessen. Da steht auch noch was zum ePaper Display drin.
+install_hb-dis-ep-xxx:
+CODE: ALLES AUSWÄHLEN
+
+indexFile="/www/rega/pages/index.htm"
+indexFileSearch="<script type=\"text/javascript\" src=\"/webui/webui.js"
+indexFileInsert="<script type=\"text/javascript\" src=\"/webui/js/extern/jp_webui_inc.js\"></script>"
+
+if [ -z "`cat $indexFile | grep \"${indexFileInsert}\"`" ]; then
+    sed -i "\~</body>~i\  $indexFileInsert" $indexFile
+fi
+Wenn noch Fragen sind, dann am besten per PN.
+
+---
+
+Nur diese Dirs sind betroffen:
+/www
+/firmware
